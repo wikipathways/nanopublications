@@ -1,0 +1,32 @@
+prefix np: <http://www.nanopub.org/nschema#>
+prefix wp: <http://vocabularies.wikipathways.org/wp#>
+prefix dcterms: <http://purl.org/dc/terms/>
+prefix has-source: <http://semanticscience.org/resource/SIO_000253>
+
+insert {
+  graph ?headGraph {
+    ?nanopub a np:Nanopublication .
+    ?nanopub np:hasAssertion ?assertionGraph .
+    ?nanopub np:hasProvenance ?provenanceGraph .
+    ?nanopub np:hasPublicationInfo ?publicationInfoGraph .
+  }
+  graph ?assertionGraph	{
+    ?interaction a wp:Interaction .
+  }
+  graph ?provenanceGraph {
+    ?assertionGraph has-source: ?pathway .
+  }
+  graph ?publicationInfoGraph {
+    ?nanopub dcterms:created ?now .
+  }
+} where {
+  ?interaction a wp:Interaction ;
+    dcterms:isPartOf ?pathway .
+  ?pathway a wp:Pathway .
+  bind(iri(concat(str(?interaction),"_nanopub")) as ?nanopub)
+  bind(iri(concat(str(?nanopub),"head")) as ?headGraph)
+  bind(iri(concat(str(?nanopub),"assertion")) as ?assertionGraph)
+  bind(iri(concat(str(?nanopub),"provenance")) as ?provenanceGraph)
+  bind(iri(concat(str(?nanopub),"publicationInfo")) as ?publicationInfoGraph)
+  bind(now() as ?now)
+}

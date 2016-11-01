@@ -1,0 +1,84 @@
+<project>
+
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>nl.unimaas.bigcat.wikipathways.nanopubs</groupId>
+  <artifactId>wikipathways.nanooubs</artifactId>
+  <version>1-SNAPSHOT</version>
+
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <junit.version>4.8.1</junit.version>
+  </properties>
+
+  <repositories>
+    <repository>
+      <id>apache-repo-releases</id>
+      <url>https://repository.apache.org/content/repositories/snapshots/</url>
+    </repository>
+  </repositories>
+  
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>2.3.2</version>
+        <configuration>
+          <source>1.7</source>
+          <target>1.7</target>
+          <showDeprecation>true</showDeprecation>
+          <showWarnings>true</showWarnings>
+          <fork>true</fork>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>2.4.3</version>
+        <configuration>
+          <reportsDirectory>${project.build.directory}/${report.directory}</reportsDirectory>
+          <forkCount>0</forkCount>
+          <parallel>none</parallel>
+          <argLine>-Xms2G -Xmx2G -server -DSUBSETPREFIX=${SUBSETPREFIX} -DOPSWPRDF=${OPSWPRDF}</argLine>
+          <includes>
+            <include>**/*.java</include>
+          </includes>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+
+  <dependencies>
+  	<dependency>
+  		<groupId>org.nanopub</groupId>
+  		<artifactId>nanopub</artifactId>
+  		<version>1.10</version>
+  	</dependency>
+  	<dependency>
+  		<groupId>org.openrdf.sesame</groupId>
+  		<artifactId>sesame-repository-sparql</artifactId>
+  		<version>2.8.7</version>
+  	</dependency>
+  	<dependency>
+  		<groupId>org.openrdf.sesame</groupId>
+  		<artifactId>sesame-repository-sail</artifactId>
+  		<version>2.8.7</version>
+  	</dependency>
+  	<dependency>
+  		<groupId>org.openrdf.sesame</groupId>
+  		<artifactId>sesame-sail-memory</artifactId>
+  		<version>2.8.7</version>
+  	</dependency>
+  	<dependency>
+  		<groupId>org.openrdf.sesame</groupId>
+  		<artifactId>sesame-model</artifactId>
+  		<version>2.8.7</version>
+  	</dependency>
+  	<dependency>
+  		<groupId>org.openrdf.sesame</groupId>
+  		<artifactId>sesame-repository-api</artifactId>
+  		<version>2.8.7</version>
+  	</dependency>
+  </dependencies>
+</project>
