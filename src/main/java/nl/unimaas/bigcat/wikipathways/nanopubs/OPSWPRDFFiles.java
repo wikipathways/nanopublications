@@ -83,11 +83,17 @@ public class OPSWPRDFFiles {
 			String baseURI = "http://nanopubs.wikipathways.org/";
 			conn.add(file, baseURI, RDFFormat.TURTLE);
 		}
-		String query = ResourceHelper.resourceAsString("constructs/interactions.insert");
+		conn.close();
+
+		return loadedData;
+	}
+
+	public static SailRepository createNanopublications(SailRepository loadedData, String updateSPARQL) throws Exception {
+		SailRepositoryConnection conn = loadedData.getConnection();
+		String query = ResourceHelper.resourceAsString(updateSPARQL);
 		Update update = conn.prepareUpdate(QueryLanguage.SPARQL, query);
 		update.execute();
 		conn.close();
-		locked = false;
 		return loadedData;
 	}
 

@@ -48,6 +48,7 @@ public class InteractionPubs {
 
 	public static void main(String[] args) throws Exception {
 		SailRepository data = OPSWPRDFFiles.loadData();
+		OPSWPRDFFiles.createNanopublications(data, "constructs/interactions.insert");
 		SailRepositoryConnection conn = data.getConnection();
 		RepositoryResult<Resource> result = conn.getContextIDs();
 		while (result.hasNext()) {
