@@ -26,67 +26,9 @@
  */
 package nl.unimaas.bigcat.wikipathways.nanopubs;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.nanopub.Nanopub;
-import org.nanopub.NanopubImpl;
-import org.nanopub.NanopubUtils;
-import org.nanopub.trusty.MakeTrustyNanopub;
-import org.openrdf.model.Resource;
-import org.openrdf.model.Statement;
-import org.openrdf.model.URI;
-import org.openrdf.model.impl.LiteralImpl;
-import org.openrdf.model.impl.StatementImpl;
-import org.openrdf.model.impl.URIImpl;
-import org.openrdf.model.vocabulary.RDF;
-import org.openrdf.repository.RepositoryResult;
-import org.openrdf.repository.sail.SailRepository;
-import org.openrdf.repository.sail.SailRepositoryConnection;
-import org.openrdf.rio.RDFFormat;
-
-public class InteractionPubs {
-
-	private static final URI pavCreatedBy = new URIImpl("http://purl.org/pav/createdBy");
+public class InteractionPubs extends NanoPubs {
 
 	public static void main(String[] args) throws Exception {
-		SailRepository data = OPSWPRDFFiles.loadData();
-		OPSWPRDFFiles.createNanopublications(data, "constructs/interactions.insert");
-		SailRepositoryConnection conn = data.getConnection();
-		RepositoryResult<Resource> result = conn.getContextIDs();
-		StringBuffer buffer = new StringBuffer();
-		while (result.hasNext()) {
-			Resource graph = result.next();
-			RepositoryResult<Statement> r = conn.getStatements(null, RDF.TYPE, Nanopub.NANOPUB_TYPE_URI, false, graph);
-			if (!r.hasNext()) continue;
-			Resource nanopubId = r.next().getSubject();
-			if (!(nanopubId instanceof URI)) {
-				continue;
-			}
-			List<String> prefixes = new ArrayList<String>();
-			prefixes.add("has-source");
-			prefixes.add("wp");
-			prefixes.add("xsd");
-			prefixes.add("dcterms");
-			prefixes.add("np");
-			Map<String,String> namespaces = new HashMap<String, String>();
-			namespaces.put("has-source", "http://semanticscience.org/resource/SIO_000253");
-			namespaces.put("wp", "http://vocabularies.wikipathways.org/wp#");
-			namespaces.put("xsd", "http://www.w3.org/2001/XMLSchema#");
-			namespaces.put("dcterms", "http://purl.org/dc/terms/");
-			namespaces.put("np", "http://www.nanopub.org/nschema#");
-			Nanopub nanopub = new NanopubImpl(data, (URI)nanopubId, prefixes, namespaces);
-			conn.add(
-				new StatementImpl(nanopub.getPubinfoUri(), pavCreatedBy, 
-						new LiteralImpl("https://jenkins.bigcat.unimaas.nl/job/WikiPathways%20Nanopublications/")
-				),
-				nanopub.getPubinfoUri()
-			);
-			nanopub = MakeTrustyNanopub.transform(nanopub);
-			buffer.append(NanopubUtils.writeToString(nanopub, RDFFormat.TRIG)).append("\n\n");
-		}
-		ResourceHelper.saveToFile("interactions.trig", buffer.toString());
+		createNanoPublications("interactions");
 	}
 }
