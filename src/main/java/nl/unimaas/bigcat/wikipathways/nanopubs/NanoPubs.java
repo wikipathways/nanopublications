@@ -39,9 +39,6 @@ import org.nanopub.trusty.MakeTrustyNanopub;
 import org.openrdf.model.Resource;
 import org.openrdf.model.Statement;
 import org.openrdf.model.URI;
-import org.openrdf.model.impl.LiteralImpl;
-import org.openrdf.model.impl.StatementImpl;
-import org.openrdf.model.impl.URIImpl;
 import org.openrdf.model.vocabulary.RDF;
 import org.openrdf.repository.RepositoryException;
 import org.openrdf.repository.RepositoryResult;
@@ -53,8 +50,6 @@ import org.openrdf.rio.RDFHandlerException;
 import net.trustyuri.TrustyUriException;
 
 public class NanoPubs {
-
-	private static final URI pavCreatedBy = new URIImpl("http://purl.org/pav/createdBy");
 
 	protected static void createNanoPublications(String topic)
 			throws Exception, RepositoryException, MalformedNanopubException, TrustyUriException, RDFHandlerException {
@@ -77,22 +72,18 @@ public class NanoPubs {
 			prefixes.add("xsd");
 			prefixes.add("dcterms");
 			prefixes.add("np");
-			prefixes.add("pav");
+			prefixes.add("wd");
+			prefixes.add("prov");
 			Map<String,String> namespaces = new HashMap<String, String>();
 			namespaces.put("has-source", "http://semanticscience.org/resource/SIO_000253");
 			namespaces.put("wp", "http://vocabularies.wikipathways.org/wp#");
 			namespaces.put("xsd", "http://www.w3.org/2001/XMLSchema#");
 			namespaces.put("dcterms", "http://purl.org/dc/terms/");
 			namespaces.put("np", "http://www.nanopub.org/nschema#");
-			namespaces.put("pav", "http://purl.org/pav/");
+			namespaces.put("wd", "https://www.wikidata.org/entity/");
+			namespaces.put("prov", "http://www.w3.org/ns/prov#");
 			Nanopub nanopub = new NanopubImpl(data, (URI)nanopubId, prefixes, namespaces);
-			conn.add(
-				new StatementImpl(nanopub.getUri(), pavCreatedBy,
-					new URIImpl("https://jenkins.bigcat.unimaas.nl/job/WikiPathways%20Nanopublications/")
-				),
-				nanopub.getPubinfoUri()
-			);
-			nanopub = MakeTrustyNanopub.transform(new NanopubImpl(data, (URI)nanopubId, prefixes, namespaces));
+			nanopub = MakeTrustyNanopub.transform(nanopub);
 			buffer.append(NanopubUtils.writeToString(nanopub, RDFFormat.TRIG)).append("\n\n");
 		}
 		conn.close();
