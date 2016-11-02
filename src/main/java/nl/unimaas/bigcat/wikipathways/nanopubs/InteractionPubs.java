@@ -38,6 +38,9 @@ import org.nanopub.trusty.MakeTrustyNanopub;
 import org.openrdf.model.Resource;
 import org.openrdf.model.Statement;
 import org.openrdf.model.URI;
+import org.openrdf.model.impl.LiteralImpl;
+import org.openrdf.model.impl.StatementImpl;
+import org.openrdf.model.impl.URIImpl;
 import org.openrdf.model.vocabulary.RDF;
 import org.openrdf.repository.RepositoryResult;
 import org.openrdf.repository.sail.SailRepository;
@@ -45,6 +48,8 @@ import org.openrdf.repository.sail.SailRepositoryConnection;
 import org.openrdf.rio.RDFFormat;
 
 public class InteractionPubs {
+
+	private static final URI pavCreatedBy = new URIImpl("http://purl.org/pav/createdBy");
 
 	public static void main(String[] args) throws Exception {
 		SailRepository data = OPSWPRDFFiles.loadData();
@@ -73,6 +78,12 @@ public class InteractionPubs {
 			namespaces.put("dcterms", "http://purl.org/dc/terms/");
 			namespaces.put("np", "http://www.nanopub.org/nschema#");
 			Nanopub nanopub = new NanopubImpl(data, (URI)nanopubId, prefixes, namespaces);
+			conn.add(
+				new StatementImpl(nanopub.getPubinfoUri(), pavCreatedBy, 
+						new LiteralImpl("https://jenkins.bigcat.unimaas.nl/job/WikiPathways%20Nanopublications/")
+				),
+				nanopub.getPubinfoUri()
+			);
 			nanopub = MakeTrustyNanopub.transform(nanopub);
 			buffer.append(NanopubUtils.writeToString(nanopub, RDFFormat.TRIG)).append("\n\n");
 		}
