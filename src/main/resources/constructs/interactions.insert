@@ -13,10 +13,12 @@ insert {
     ?nanopub np:hasPublicationInfo ?publicationInfoGraph .
   }
   graph ?assertionGraph	{
-    ?interaction a wp:Interaction .
-    ?interaction wp:source ?source .
-    ?interaction wp:target ?target .
-    ?interaction wp:organismName ?organism .
+    ?interaction a wp:Interaction ;
+      wp:source ?source ;
+      wp:target ?target ;
+      wp:organismName ?organism .
+    ?source a ?sourceType .
+    ?target a ?targetType .
   }
   graph ?provenanceGraph {
     ?assertionGraph has-source: ?pathway .
@@ -30,12 +32,14 @@ insert {
       prov:atLocation wd:Q1137652 .
   }
 } where {
-  ?interaction a wp:Interaction ;
-    dcterms:isPartOf ?pathway .
-  ?interaction wp:source ?source .
-  ?interaction wp:target ?target .
+  ?interaction wp:source ?source . ?source a ?sourceType .
+  ?interaction wp:target ?target . ?target a ?targetType .
   ?pathway a wp:Pathway ;
     wp:organismName ?organism .
+  ?interaction a wp:Interaction ;
+    dcterms:isPartOf ?pathway .
+  FILTER (?sourceType != wp:DataNode)
+  FILTER (?targetType != wp:DataNode)
   bind(iri(concat(str(?interaction),"_nanopub")) as ?nanopub)
   bind(iri(concat(str(?nanopub),"head")) as ?headGraph)
   bind(iri(concat(str(?nanopub),"assertion")) as ?assertionGraph)
