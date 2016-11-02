@@ -51,6 +51,7 @@ public class InteractionPubs {
 		OPSWPRDFFiles.createNanopublications(data, "constructs/interactions.insert");
 		SailRepositoryConnection conn = data.getConnection();
 		RepositoryResult<Resource> result = conn.getContextIDs();
+		StringBuffer buffer = new StringBuffer();
 		while (result.hasNext()) {
 			Resource graph = result.next();
 			RepositoryResult<Statement> r = conn.getStatements(null, RDF.TYPE, Nanopub.NANOPUB_TYPE_URI, false, graph);
@@ -74,7 +75,8 @@ public class InteractionPubs {
 			namespaces.put("np", "http://www.nanopub.org/nschema#");
 			Nanopub nanopub = new NanopubImpl(data, (URI)nanopubId, prefixes, namespaces);
 			nanopub = MakeTrustyNanopub.transform(nanopub);
-			ResourceHelper.saveToFile("interactions.trig", NanopubUtils.writeToString(nanopub, RDFFormat.TRIG) + "\n\n");
+			buffer.append(NanopubUtils.writeToString(nanopub, RDFFormat.TRIG)).append("\n\n");
 		}
+		ResourceHelper.saveToFile("interactions.trig", buffer.toString());
 	}
 }
