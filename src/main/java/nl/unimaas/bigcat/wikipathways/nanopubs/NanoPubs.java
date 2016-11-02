@@ -93,6 +93,7 @@ public class NanoPubs {
 			nanopub = MakeTrustyNanopub.transform(nanopub);
 			buffer.append(NanopubUtils.writeToString(nanopub, RDFFormat.TRIG)).append("\n\n");
 		}
+		conn.close();
 		ResourceHelper.saveToFile(topic + ".trig", buffer.toString());
 	}
 }
