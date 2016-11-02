@@ -11,7 +11,7 @@ insert {
     ?nanopub np:hasPublicationInfo ?publicationInfoGraph .
   }
   graph ?assertionGraph	{
-    ?interaction a wp:Interaction .
+    ?interaction a wp:Complex .
   }
   graph ?provenanceGraph {
     ?assertionGraph has-source: ?pathway .
