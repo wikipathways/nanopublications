@@ -1,4 +1,4 @@
-/* Copyright (C) 2013  Egon Willighagen <egon.willighagen@gmail.com>
+/* Copyright (C) 2013-2016  Egon Willighagen <egon.willighagen@gmail.com>
  *
  * All rights reserved.
  * 
@@ -26,6 +26,8 @@
  */
 package nl.unimaas.bigcat.wikipathways.nanopubs;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.util.Scanner;
 
@@ -33,8 +35,15 @@ public class ResourceHelper {
 
 	public static String resourceAsString(String resource) {
 		InputStream iStream = ClassLoader.getSystemResourceAsStream(resource);
+		@SuppressWarnings("resource")
 		Scanner scanner = new Scanner(iStream).useDelimiter("\\A");
 	    return scanner.hasNext() ? scanner.next() : "";
+	}
+
+	public static void saveToFile(String file, String content) throws Exception {
+		FileOutputStream output = new FileOutputStream(new File(file));
+		output.write(content.getBytes());
+		output.close();
 	}
 
 }

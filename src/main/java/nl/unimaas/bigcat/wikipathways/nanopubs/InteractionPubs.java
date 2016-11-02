@@ -74,7 +74,7 @@ public class InteractionPubs {
 			namespaces.put("np", "http://www.nanopub.org/nschema#");
 			Nanopub nanopub = new NanopubImpl(data, (URI)nanopubId, prefixes, namespaces);
 			nanopub = MakeTrustyNanopub.transform(nanopub);
-			System.out.println(NanopubUtils.writeToString(nanopub, RDFFormat.TRIG) + "\n\n");
+			ResourceHelper.saveToFile("interactions.trig", NanopubUtils.writeToString(nanopub, RDFFormat.TRIG) + "\n\n");
 		}
 	}
 }
