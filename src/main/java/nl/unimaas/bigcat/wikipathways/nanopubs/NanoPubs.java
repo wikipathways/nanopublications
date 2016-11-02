@@ -96,6 +96,10 @@ public class NanoPubs {
 			buffer.append(NanopubUtils.writeToString(nanopub, RDFFormat.TRIG)).append("\n\n");
 		}
 		conn.close();
-		ResourceHelper.saveToFile(topic + ".trig", buffer.toString());
+		String subsetPrefix = "wp111";
+		if (System.getProperty("SUBSETPREFIX") != null) {
+			subsetPrefix = System.getProperty("SUBSETPREFIX");
+		}
+		ResourceHelper.saveToFile(topic + "." + subsetPrefix + ".trig", buffer.toString());
 	}
 }
