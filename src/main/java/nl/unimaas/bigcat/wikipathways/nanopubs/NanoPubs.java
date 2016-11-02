@@ -58,6 +58,7 @@ public class NanoPubs {
 		SailRepositoryConnection conn = data.getConnection();
 		RepositoryResult<Resource> result = conn.getContextIDs();
 		StringBuffer buffer = new StringBuffer();
+		int pubCount = 0;
 		while (result.hasNext()) {
 			Resource graph = result.next();
 			RepositoryResult<Statement> r = conn.getStatements(null, RDF.TYPE, Nanopub.NANOPUB_TYPE_URI, false, graph);
@@ -66,6 +67,7 @@ public class NanoPubs {
 			if (!(nanopubId instanceof URI)) {
 				continue;
 			}
+			pubCount++;
 			List<String> prefixes = new ArrayList<String>();
 			prefixes.add("has-source");
 			prefixes.add("wp");
@@ -92,5 +94,6 @@ public class NanoPubs {
 			subsetPrefix = System.getProperty("SUBSETPREFIX");
 		}
 		ResourceHelper.saveToFile(topic + "." + subsetPrefix + ".trig", buffer.toString());
+		System.out.println("Number of saved nanopubs: " + pubCount);
 	}
 }
