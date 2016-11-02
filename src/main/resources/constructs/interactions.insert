@@ -12,6 +12,9 @@ insert {
   }
   graph ?assertionGraph	{
     ?interaction a wp:Interaction .
+    ?interaction wp:source ?source .
+    ?interaction wp:target ?target .
+    ?interaction wp:organismName ?organism .
   }
   graph ?provenanceGraph {
     ?assertionGraph has-source: ?pathway .
@@ -22,7 +25,10 @@ insert {
 } where {
   ?interaction a wp:Interaction ;
     dcterms:isPartOf ?pathway .
-  ?pathway a wp:Pathway .
+  ?interaction wp:source ?source .
+  ?interaction wp:target ?target .
+  ?pathway a wp:Pathway ;
+    wp:organismName ?organism .
   bind(iri(concat(str(?interaction),"_nanopub")) as ?nanopub)
   bind(iri(concat(str(?nanopub),"head")) as ?headGraph)
   bind(iri(concat(str(?nanopub),"assertion")) as ?assertionGraph)
