@@ -77,20 +77,22 @@ public class NanoPubs {
 			prefixes.add("xsd");
 			prefixes.add("dcterms");
 			prefixes.add("np");
+			prefixes.add("pav");
 			Map<String,String> namespaces = new HashMap<String, String>();
 			namespaces.put("has-source", "http://semanticscience.org/resource/SIO_000253");
 			namespaces.put("wp", "http://vocabularies.wikipathways.org/wp#");
 			namespaces.put("xsd", "http://www.w3.org/2001/XMLSchema#");
 			namespaces.put("dcterms", "http://purl.org/dc/terms/");
 			namespaces.put("np", "http://www.nanopub.org/nschema#");
+			namespaces.put("pav", "http://purl.org/pav/");
 			Nanopub nanopub = new NanopubImpl(data, (URI)nanopubId, prefixes, namespaces);
 			conn.add(
-					new StatementImpl(nanopub.getPubinfoUri(), pavCreatedBy, 
-							new LiteralImpl("https://jenkins.bigcat.unimaas.nl/job/WikiPathways%20Nanopublications/")
-					),
-					nanopub.getPubinfoUri()
-				);
-			nanopub = MakeTrustyNanopub.transform(nanopub);
+				new StatementImpl(nanopub.getPubinfoUri(), pavCreatedBy, 
+					new URIImpl("https://jenkins.bigcat.unimaas.nl/job/WikiPathways%20Nanopublications/")
+				),
+				nanopub.getPubinfoUri()
+			);
+			nanopub = MakeTrustyNanopub.transform(new NanopubImpl(data, (URI)nanopubId, prefixes, namespaces));
 			buffer.append(NanopubUtils.writeToString(nanopub, RDFFormat.TRIG)).append("\n\n");
 		}
 		conn.close();
