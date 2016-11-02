@@ -57,8 +57,7 @@ public class ComplexesPubs {
 			RepositoryResult<Statement> r = conn.getStatements(null, RDF.TYPE, Nanopub.NANOPUB_TYPE_URI, false, graph);
 			if (!r.hasNext()) continue;
 			Resource nanopubId = r.next().getSubject();
-			if (!(nanopubId instanceof URI)) {
-				System.out.println("Nanopub ID has to be a URI: " + nanopubId);
+			if (!(nanopubId instanceof URI) || ((URI)nanopubId).toString().contains("WP/Interaction/")) {
 				continue;
 			}
 			List<String> prefixes = new ArrayList<String>();
