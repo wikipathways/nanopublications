@@ -87,7 +87,7 @@ public class NanoPubs {
 			namespaces.put("pav", "http://purl.org/pav/");
 			Nanopub nanopub = new NanopubImpl(data, (URI)nanopubId, prefixes, namespaces);
 			conn.add(
-				new StatementImpl(nanopub.getPubinfoUri(), pavCreatedBy, 
+				new StatementImpl(nanopub.getUri(), pavCreatedBy,
 					new URIImpl("https://jenkins.bigcat.unimaas.nl/job/WikiPathways%20Nanopublications/")
 				),
 				nanopub.getPubinfoUri()
