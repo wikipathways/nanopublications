@@ -22,6 +22,7 @@ insert {
   }
   graph ?provenanceGraph {
     ?assertionGraph has-source: ?pathway .
+    ?assertionGraph has-source: ?pmidURI .
   }
   graph ?publicationInfoGraph {
     ?nanopub dcterms:created ?now ;
@@ -38,6 +39,7 @@ insert {
     wp:organismName ?organism .
   ?interaction a wp:Interaction ;
     dcterms:isPartOf ?pathway .
+  OPTIONAL { ?interaction dcterms:bibliographicCitation ?pmidURI }
   FILTER (?sourceType != wp:DataNode)
   FILTER (?targetType != wp:DataNode)
   bind(iri(concat(str(?interaction),"_nanopub")) as ?nanopub)
