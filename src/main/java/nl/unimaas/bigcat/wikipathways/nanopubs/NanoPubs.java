@@ -79,6 +79,7 @@ public class NanoPubs {
 			prefixes.add("dc");
 			prefixes.add("pmid");
 			prefixes.add("obo");
+			prefixes.add("pav");
 			Map<String,String> namespaces = new HashMap<String, String>();
 			namespaces.put("has-source", "http://semanticscience.org/resource/SIO_000253");
 			namespaces.put("wp", "http://vocabularies.wikipathways.org/wp#");
@@ -90,6 +91,7 @@ public class NanoPubs {
 			namespaces.put("dc", "http://purl.org/dc/elements/1.1/");
 			namespaces.put("pmid", "http://identifiers.org/pubmed/");
 			namespaces.put("obo", "http://purl.obolibrary.org/obo/");
+			namespaces.put("pav", "http://purl.org/pav/>");
 			Nanopub nanopub = new NanopubImpl(data, (URI)nanopubId, prefixes, namespaces);
 			nanopub = MakeTrustyNanopub.transform(nanopub);
 			buffer.append(NanopubUtils.writeToString(nanopub, RDFFormat.TRIG)).append("\n\n");

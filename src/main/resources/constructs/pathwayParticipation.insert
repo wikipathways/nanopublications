@@ -5,6 +5,7 @@ prefix has-source: <http://semanticscience.org/resource/SIO_000253>
 prefix prov: <http://www.w3.org/ns/prov#>
 prefix wd: <https://www.wikidata.org/entity/>
 prefix dc: <http://purl.org/dc/elements/1.1/>
+prefix pav: <http://purl.org/pav/>
 
 insert {
   graph ?headGraph {
@@ -15,9 +16,9 @@ insert {
   }
   graph ?assertionGraph	{
     ?entity a ?entityType ;
-      dcterms:isPartOf ?pathway ;
+      dcterms:isPartOf ?unversioned ;
       wp:organismName ?organism .
-    ?pathway wp:pathwayOntologyTag ?tag .
+    ?unversioned wp:pathwayOntologyTag ?tag .
   }
   graph ?provenanceGraph {
     ?assertionGraph has-source: ?pathway .
@@ -34,6 +35,7 @@ insert {
       prov:atLocation wd:Q1137652 .
   }
 } where {
+  ?unversioned pav:hasVersion ?pathway .
   ?pathway a wp:Pathway ;
     dc:title ?pathwayTitle ;
     wp:pathwayOntologyTag ?tag ;
