@@ -4,6 +4,7 @@ prefix dcterms: <http://purl.org/dc/terms/>
 prefix has-source: <http://semanticscience.org/resource/SIO_000253>
 prefix prov: <http://www.w3.org/ns/prov#>
 prefix wd: <https://www.wikidata.org/entity/>
+prefix dc: <http://purl.org/dc/elements/1.1/>
 
 insert {
   graph ?headGraph {
@@ -20,6 +21,7 @@ insert {
   }
   graph ?provenanceGraph {
     ?assertionGraph has-source: ?pathway .
+    ?pathway dc:title ?pathwayTitle .
     ?assertionGraph has-source: ?pmidURI .
   }
   graph ?publicationInfoGraph {
@@ -38,6 +40,7 @@ insert {
   ?pathway a wp:Pathway .
   ?complex wp:participants ?participant . ?participant a ?participantType .
   ?pathway a wp:Pathway ;
+    dc:title ?pathwayTitle ;
     wp:organismName ?organism .
   FILTER (?participantType != wp:DataNode)
   bind(iri(concat(str(?complex),"_nanopub")) as ?nanopub)
