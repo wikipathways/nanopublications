@@ -2,6 +2,8 @@ prefix np: <http://www.nanopub.org/nschema#>
 prefix wp: <http://vocabularies.wikipathways.org/wp#>
 prefix dcterms: <http://purl.org/dc/terms/>
 prefix has-source: <http://semanticscience.org/resource/SIO_000253>
+prefix prov: <http://www.w3.org/ns/prov#>
+prefix wd: <https://www.wikidata.org/entity/>
 
 insert {
   graph ?headGraph {
@@ -11,19 +13,33 @@ insert {
     ?nanopub np:hasPublicationInfo ?publicationInfoGraph .
   }
   graph ?assertionGraph	{
-    ?interaction a wp:Complex .
+    ?complex a wp:Complex ;
+      wp:organismName ?organism .
+    ?complex wp:participant ?participant .
+    ?participant a ?participantType .
   }
   graph ?provenanceGraph {
     ?assertionGraph has-source: ?pathway .
+    ?assertionGraph has-source: ?pmidURI .
   }
   graph ?publicationInfoGraph {
-    ?nanopub dcterms:created ?now .
+    ?nanopub dcterms:created ?now ;
+      prov:wasDerivedFrom ?pathway ;
+      prov:wasGeneratedBy ?activity .
+    ?activity a prov:Activity;
+      prov:used <https://github.com/wikipathways/nanopublications> ;
+      prov:atLocation wd:Q1137652 .
   }
 } where {
-  ?interaction a wp:Complex ;
-    dcterms:isPartOf ?pathway .
+  ?complex a wp:Complex ;
+    dcterms:isPartOf ?pathway ;
+    dcterms:bibliographicCitation ?pmidURI .
   ?pathway a wp:Pathway .
-  bind(iri(concat(str(?interaction),"_nanopub")) as ?nanopub)
+  ?complex wp:participants ?participant . ?participant a ?participantType .
+  ?pathway a wp:Pathway ;
+    wp:organismName ?organism .
+  FILTER (?participantType != wp:DataNode)
+  bind(iri(concat(str(?complex),"_nanopub")) as ?nanopub)
   bind(iri(concat(str(?nanopub),"head")) as ?headGraph)
   bind(iri(concat(str(?nanopub),"assertion")) as ?assertionGraph)
   bind(iri(concat(str(?nanopub),"provenance")) as ?provenanceGraph)
