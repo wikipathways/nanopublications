@@ -38,8 +38,8 @@ insert {
   ?pathway a wp:Pathway ;
     wp:organismName ?organism .
   ?interaction a wp:Interaction ;
-    dcterms:isPartOf ?pathway .
-  OPTIONAL { ?interaction dcterms:bibliographicCitation ?pmidURI }
+    dcterms:isPartOf ?pathway ;
+    dcterms:bibliographicCitation ?pmidURI .
   FILTER (?sourceType != wp:DataNode)
   FILTER (?targetType != wp:DataNode)
   bind(iri(concat(str(?interaction),"_nanopub")) as ?nanopub)
