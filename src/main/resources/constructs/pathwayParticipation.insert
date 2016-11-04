@@ -1,0 +1,53 @@
+prefix np: <http://www.nanopub.org/nschema#>
+prefix wp: <http://vocabularies.wikipathways.org/wp#>
+prefix dcterms: <http://purl.org/dc/terms/>
+prefix has-source: <http://semanticscience.org/resource/SIO_000253>
+prefix prov: <http://www.w3.org/ns/prov#>
+prefix wd: <https://www.wikidata.org/entity/>
+prefix dc: <http://purl.org/dc/elements/1.1/>
+
+insert {
+  graph ?headGraph {
+    ?nanopub a np:Nanopublication .
+    ?nanopub np:hasAssertion ?assertionGraph .
+    ?nanopub np:hasProvenance ?provenanceGraph .
+    ?nanopub np:hasPublicationInfo ?publicationInfoGraph .
+  }
+  graph ?assertionGraph	{
+    ?entity a ?entityType ;
+      dcterms:isPartOf ?pathway ;
+      wp:organismName ?organism .
+    ?pathway wp:pathwayOntologyTag ?tag .
+  }
+  graph ?provenanceGraph {
+    ?assertionGraph has-source: ?pathway .
+    ?pathway dc:title ?pathwayTitle .
+    ?assertionGraph has-source: ?pmidURI .
+  }
+  graph ?publicationInfoGraph {
+    ?nanopub dcterms:created ?now ;
+      dcterms:rights <https://creativecommons.org/licenses/by/3.0/> ;
+      prov:wasDerivedFrom ?pathway ;
+      prov:wasGeneratedBy ?activity .
+    ?activity a prov:Activity; 
+      prov:used <https://github.com/wikipathways/nanopublications> ;
+      prov:atLocation wd:Q1137652 .
+  }
+} where {
+  ?pathway a wp:Pathway ;
+    dc:title ?pathwayTitle ;
+    wp:pathwayOntologyTag ?tag ;
+    wp:organismName ?organism .
+  ?entity a wp:DataNode ;
+    dcterms:isPartOf ?pathway ;
+    dcterms:bibliographicCitation ?pmidURI .
+  ?entity a ?entityType .
+  FILTER (?entityType != wp:DataNode)
+  bind(iri(concat(str(?entity),"_nanopub")) as ?nanopub)
+  bind(iri(concat(str(?nanopub),"head")) as ?headGraph)
+  bind(iri(concat(str(?nanopub),"assertion")) as ?assertionGraph)
+  bind(iri(concat(str(?nanopub),"provenance")) as ?provenanceGraph)
+  bind(iri(concat(str(?nanopub),"publicationInfo")) as ?publicationInfoGraph)
+  bind(iri(concat(str(?nanopub),"activity")) as ?activity)
+  bind(now() as ?now)
+}
