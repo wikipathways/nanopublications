@@ -2,6 +2,10 @@
 
 Project to convert content of WPRDF into nanopublications (http://nanopub.org/).
 
+## Compiling
+
+    mvn clean package
+
 ## Running
 
 The code contains a set of standalone programs which can be used to generate
