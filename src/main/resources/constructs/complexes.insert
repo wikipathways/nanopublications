@@ -43,7 +43,7 @@ insert {
     dc:title ?pathwayTitle ;
     wp:organismName ?organism .
   FILTER (?participantType != wp:DataNode)
-  bind(iri(concat(str(?complex),"_nanopub")) as ?nanopub)
+  bind(iri("http://purl.org/np/") as ?nanopub)
   bind(iri(concat(str(?nanopub),"head")) as ?headGraph)
   bind(iri(concat(str(?nanopub),"assertion")) as ?assertionGraph)
   bind(iri(concat(str(?nanopub),"provenance")) as ?provenanceGraph)
