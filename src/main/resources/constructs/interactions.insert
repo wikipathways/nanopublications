@@ -46,7 +46,7 @@ insert {
     dcterms:bibliographicCitation ?pmidURI .
   FILTER (?sourceType != wp:DataNode)
   FILTER (?targetType != wp:DataNode)
-  bind(iri("http://purl.org/np/") as ?nanopub)
+  bind(iri(concat("http://purl.org/np/", md5(str(?interaction)))) as ?nanopub)
   bind(iri(concat(str(?nanopub),"head")) as ?headGraph)
   bind(iri(concat(str(?nanopub),"assertion")) as ?assertionGraph)
   bind(iri(concat(str(?nanopub),"provenance")) as ?provenanceGraph)
