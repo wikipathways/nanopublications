@@ -28,7 +28,7 @@ insert {
   }
   graph ?publicationInfoGraph {
     ?nanopub dcterms:created ?now ;
-      dcterms:rights <https://creativecommons.org/licenses/by/3.0/> ;
+      dcterms:rights <http://creativecommons.org/publicdomain/zero/1.0/> ;
       prov:wasDerivedFrom ?pathway ;
       prov:wasGeneratedBy ?activity .
     ?activity a prov:Activity; 
