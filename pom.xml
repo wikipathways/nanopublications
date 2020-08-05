@@ -60,7 +60,7 @@
   	<dependency>
   		<groupId>org.nanopub</groupId>
   		<artifactId>nanopub</artifactId>
-  		<version>1.14</version>
+  		<version>1.18</version> <!-- any higher version requires rewrites, due to migration from Sesame to Eclipse's RDF libraries -->
   	</dependency>
   	<dependency>
   		<groupId>org.openrdf.sesame</groupId>
