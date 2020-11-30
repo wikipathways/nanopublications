@@ -3,7 +3,7 @@ prefix wp: <http://vocabularies.wikipathways.org/wp#>
 prefix dcterms: <http://purl.org/dc/terms/>
 prefix has-source: <http://semanticscience.org/resource/SIO_000253>
 prefix prov: <http://www.w3.org/ns/prov#>
-prefix wd: <https://www.wikidata.org/entity/>
+prefix wd: <http://www.wikidata.org/entity/>
 prefix dc: <http://purl.org/dc/elements/1.1/>
 prefix pav: <http://purl.org/pav/>
 
