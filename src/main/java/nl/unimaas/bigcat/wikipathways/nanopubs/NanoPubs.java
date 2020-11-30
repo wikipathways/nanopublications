@@ -86,7 +86,7 @@ public class NanoPubs {
 			namespaces.put("xsd", "http://www.w3.org/2001/XMLSchema#");
 			namespaces.put("dcterms", "http://purl.org/dc/terms/");
 			namespaces.put("np", "http://www.nanopub.org/nschema#");
-			namespaces.put("wd", "https://www.wikidata.org/entity/");
+			namespaces.put("wd", "http://www.wikidata.org/entity/");
 			namespaces.put("prov", "http://www.w3.org/ns/prov#");
 			namespaces.put("dc", "http://purl.org/dc/elements/1.1/");
 			namespaces.put("pmid", "http://identifiers.org/pubmed/");
