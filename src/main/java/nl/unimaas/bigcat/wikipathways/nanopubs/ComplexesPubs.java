@@ -29,7 +29,7 @@ package nl.unimaas.bigcat.wikipathways.nanopubs;
 public class ComplexesPubs extends NanoPubs {
 
 	public static void main(String[] args) throws Exception {
-		createNanoPublications("complexes"); 
+		createNanoPublications("complexes");
 	}
 
 }
