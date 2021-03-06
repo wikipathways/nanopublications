@@ -26,19 +26,25 @@
 */
 package nl.unimaas.bigcat.wikipathways.nanopubs;
 
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.ParseException;
 
 import org.nanopub.MalformedNanopubException;
 import org.nanopub.Nanopub;
+import org.nanopub.NanopubCreator;
 import org.nanopub.NanopubImpl;
 import org.nanopub.NanopubUtils;
 import org.nanopub.trusty.MakeTrustyNanopub;
 import org.openrdf.model.Resource;
 import org.openrdf.model.Statement;
 import org.openrdf.model.URI;
+import org.openrdf.model.ValueFactory;
 import org.openrdf.model.vocabulary.RDF;
 import org.openrdf.repository.RepositoryException;
 import org.openrdf.repository.RepositoryResult;
@@ -57,6 +63,10 @@ public class NanoPubs {
 		OPSWPRDFFiles.createNanopublications(data, "constructs/" + topic + ".insert");
 		SailRepositoryConnection conn = data.getConnection();
 		RepositoryResult<Resource> result = conn.getContextIDs();
+		
+		// Load the pubmed JSON data
+		JSONObject jsonData = PubMed.loadJSONData();
+		
 		StringBuffer buffer = new StringBuffer();
 		int pubCount = 0;
 		while (result.hasNext()) {
@@ -92,8 +102,9 @@ public class NanoPubs {
 			namespaces.put("pmid", "http://identifiers.org/pubmed/");
 			namespaces.put("obo", "http://purl.obolibrary.org/obo/");
 			namespaces.put("pav", "http://purl.org/pav/>");
-			Nanopub nanopub = new NanopubImpl(data, (URI)nanopubId, prefixes, namespaces);
-			nanopub = MakeTrustyNanopub.transform(nanopub);
+			NanopubImpl nanopubImpl = new NanopubImpl(data, (URI)nanopubId, prefixes, namespaces);
+			Nanopub np = updateNanopublication(nanopubImpl, conn, jsonData);
+			Nanopub nanopub = MakeTrustyNanopub.transform(np);
 			buffer.append(NanopubUtils.writeToString(nanopub, RDFFormat.TRIG)).append("\n\n");
 		}
 		conn.close();
@@ -103,5 +114,77 @@ public class NanoPubs {
 		}
 		ResourceHelper.saveToFile(topic + "." + subsetPrefix + ".trig", buffer.toString());
 		System.out.println("Number of saved nanopubs: " + pubCount);
+	}
+
+	private static Nanopub updateNanopublication(NanopubImpl nanopub, SailRepositoryConnection conn, JSONObject jsonData) {
+		NanopubCreator npCreator = new NanopubCreator();
+		npCreator.setNanopubUri(nanopub.getUri());
+		ValueFactory factory = conn.getValueFactory();
+		
+		// Add Namespaces
+		for(String prefix : nanopub.getNsPrefixes())
+		{
+			//System.out.println(prefix);
+			//System.out.println(np.getNamespace(prefix));
+			String namespace = nanopub.getNamespace(prefix);
+			npCreator.addNamespace(prefix, namespace);
+		}
+		npCreator.addNamespace("pav", "http://purl.org/pav/");
+		
+		//Add Assertion Statements
+		npCreator.setAssertionUri(nanopub.getAssertionUri());
+		for(Statement st : nanopub.getAssertion())
+		{
+			npCreator.addAssertionStatement(st.getSubject(), st.getPredicate(), st.getObject());
+		}
+		
+		//Add Provenance Statements
+		npCreator.setProvenanceUri(nanopub.getProvenanceUri());
+		Date pubDate = new Date();
+		
+		for(Statement st : nanopub.getProvenance())
+		{
+			if(st.getObject().stringValue().startsWith("http://identifiers.org/pubmed/"))
+			{
+				try {
+					pubDate = PubMed.getPubDate(st.getObject().stringValue().split("/pubmed/")[1], jsonData);
+				} catch (IOException e) {
+				} catch (ParseException e) {
+				}
+			}
+			npCreator.addProvenanceStatement(st.getSubject(), st.getPredicate(), st.getObject());
+		}
+		
+		//Add PubInfo Statements
+		npCreator.setPubinfoUri(nanopub.getPubinfoUri());
+		Resource sub = null;
+		for(Statement st : nanopub.getPubinfo())
+		{
+			if(st.getSubject().equals(nanopub.getUri()))
+				sub = st.getSubject();
+			//sub = st.getSubject();
+			if(st.getPredicate().stringValue().equals("http://purl.org/dc/terms/created"))
+			{
+				npCreator.addPubinfoStatement(st.getSubject(), factory.createURI("http://purl.org/pav/","createdOn"), st.getObject());
+			}
+			else
+			{
+				npCreator.addPubinfoStatement(st.getSubject(), st.getPredicate(), st.getObject());
+			}	
+		}
+		
+		npCreator.addPubinfoStatement(sub, factory.createURI("http://purl.org/pav/","authoredOn"), factory.createLiteral(pubDate));
+		
+		///////////////////////////////////////////////////////////////
+		npCreator.setNanopubUri(nanopub.getUri());
+		
+		try {
+			return npCreator.finalizeNanopub();
+		} catch (MalformedNanopubException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return null;
 	}
 }
