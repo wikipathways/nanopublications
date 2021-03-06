@@ -1,8 +1,36 @@
+/* Copyright (C) 2015-2016  Egon Willighagen <egon.willighagen@gmail.com>
+ *
+ * All rights reserved.
+ * 
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *   - Redistributions of source code must retain the above copyright
+ *     notice, this list of conditions and the following disclaimer.
+ *   - Redistributions in binary form must reproduce the above copyright
+ *     notice, this list of conditions and the following disclaimer in the
+ *     documentation and/or other materials provided with the distribution.
+ *   - Neither the name of the <organization> nor the
+ *     names of its contributors may be used to endorse or promote products
+ *     derived from this software without specific prior written permission.
+ * 
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL <COPYRIGHT HOLDER> BE LIABLE FOR ANY
+ * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
 package nl.unimaas.bigcat.wikipathways.nanopubs;
 
 import java.io.BufferedReader;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.Reader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.text.SimpleDateFormat;
@@ -13,69 +41,42 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 public class PubMed {
-	   public static Date getPublicationDate(String pubmedId) throws IOException, ParseException {
+	public static JSONObject loadJSONData()
+	{
+		JSONObject jsonData = new JSONObject();
+		
+		try (Reader reader = new FileReader("pubmed_data.json")) {
+			JSONParser parser = new JSONParser();
+			JSONObject jsObj = (JSONObject) parser.parse(reader);
+			jsonData = (JSONObject) jsObj.get("result");
+           return jsonData;
+		}
+		catch(Exception e)
+		{
+			System.out.println("Please provide the pubmed json data.");
+		}
+		
+		return null;
+	}
+	   public static Date getPubDate(String pubmedId, JSONObject jsonData) throws IOException, ParseException {
 		   if(isNumeric(pubmedId))
 		   {
-			    String postUrl = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?db=pubmed&id="+pubmedId+"&retmode=json"; //post url
-			    //URLConnection conn = null;
-			    
-//	    		URL url = new URL(postUrl);
-//		        conn = url.openConnection();
-//		        conn.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.36");
-		       
-			    URL url = new URL(postUrl);
-			    HttpURLConnection conn = (HttpURLConnection)url.openConnection(); 
-			    conn.setRequestMethod("GET");
-			    conn.connect();
-			    int responsecode = conn.getResponseCode();
-			    if(responsecode != 200)
-			    {
-			    	System.out.println(pubmedId);
-			    	throw new RuntimeException("HttpResponseCode: " +responsecode);
-			    }
-			    else
-			    {
-			    	InputStreamReader inputStreamReader = new InputStreamReader(conn.getInputStream());
-			    	BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
-			    	JSONParser parse = new JSONParser();
-			    	JSONObject jobj = (JSONObject)parse.parse(bufferedReader);
-			    	JSONObject resultJson = (JSONObject) jobj.get("result");
-			    	JSONObject pubmedJson = (JSONObject) resultJson.get(pubmedId);
-			    	String jsonDate = "";
-			    	
-			    	conn.disconnect();
-			    	
-			    	if (!((String)pubmedJson.get("epubdate")).equals(""))
-			    		jsonDate = (String)pubmedJson.get("epubdate");
-			    	else if(!((String)pubmedJson.get("pubdate")).equals(""))
-			    		jsonDate = (String)pubmedJson.get("pubdate");
-			    		
-			    	String[] splitDate = jsonDate.split("-");
-			    	String date = "";
-			    	if(splitDate[0].split(" ").length == 3)
-			    		date = splitDate[0];
-			    	else if(splitDate[0].split(" ").length == 2)
-			    		date = splitDate[0] + " 01";
-			    	else
-			    		date = splitDate[0] + " Jan 01";
-			    	
-			    	SimpleDateFormat format = new SimpleDateFormat("yyyy MMM dd");
-			    	String dateString = format.format( new Date());
-			    	//System.out.println(dateString);
-			    	try {
-						Date pubDate = format.parse ( date );
-						format = new SimpleDateFormat("yyyy-MM-dd");
-						
-						return pubDate;
-					} catch (java.text.ParseException e) {
-						System.out.println(pubmedId + " " + jsonDate);
-						System.out.println(e);
-					} 
-			    }		   
+			   JSONObject jsPubmed = (JSONObject) jsonData.get(pubmedId);
+			   SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+				  
+			   Date date = null;
+				try {
+					if(jsPubmed!=null)
+						date = format.parse(jsPubmed.get("pubdate").toString());
+					else
+						date = format.parse("0000-00-00");
+				} catch (java.text.ParseException e) {
+				}
+				  return date;
 		   }
-
-			return null;
-		}
+		   
+		   return null;
+	   }
 	   
 	   public static boolean isNumeric(final String str) {
 

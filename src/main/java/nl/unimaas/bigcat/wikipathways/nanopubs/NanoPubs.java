@@ -32,7 +32,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
+import org.json.simple.JSONObject;
 import org.json.simple.parser.ParseException;
 
 import org.nanopub.MalformedNanopubException;
@@ -63,6 +63,9 @@ public class NanoPubs {
 		OPSWPRDFFiles.createNanopublications(data, "constructs/" + topic + ".insert");
 		SailRepositoryConnection conn = data.getConnection();
 		RepositoryResult<Resource> result = conn.getContextIDs();
+		
+		// Load the pubmed JSON data
+		JSONObject jsonData = PubMed.loadJSONData();
 		
 		StringBuffer buffer = new StringBuffer();
 		int pubCount = 0;
@@ -100,7 +103,7 @@ public class NanoPubs {
 			namespaces.put("obo", "http://purl.obolibrary.org/obo/");
 			namespaces.put("pav", "http://purl.org/pav/>");
 			NanopubImpl nanopubImpl = new NanopubImpl(data, (URI)nanopubId, prefixes, namespaces);
-			Nanopub np = updateNanopublication(nanopubImpl, conn);
+			Nanopub np = updateNanopublication(nanopubImpl, conn, jsonData);
 			Nanopub nanopub = MakeTrustyNanopub.transform(np);
 			buffer.append(NanopubUtils.writeToString(nanopub, RDFFormat.TRIG)).append("\n\n");
 		}
@@ -113,7 +116,7 @@ public class NanoPubs {
 		System.out.println("Number of saved nanopubs: " + pubCount);
 	}
 
-	private static Nanopub updateNanopublication(NanopubImpl nanopub, SailRepositoryConnection conn) {
+	private static Nanopub updateNanopublication(NanopubImpl nanopub, SailRepositoryConnection conn, JSONObject jsonData) {
 		NanopubCreator npCreator = new NanopubCreator();
 		npCreator.setNanopubUri(nanopub.getUri());
 		ValueFactory factory = conn.getValueFactory();
@@ -144,13 +147,9 @@ public class NanoPubs {
 			if(st.getObject().stringValue().startsWith("http://identifiers.org/pubmed/"))
 			{
 				try {
-					pubDate = PubMed.getPublicationDate(st.getObject().stringValue().split("/pubmed/")[1]);
+					pubDate = PubMed.getPubDate(st.getObject().stringValue().split("/pubmed/")[1], jsonData);
 				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
 				} catch (ParseException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
 				}
 			}
 			npCreator.addProvenanceStatement(st.getSubject(), st.getPredicate(), st.getObject());
