@@ -1,4 +1,4 @@
-/* Copyright (C) 2013-2016  Egon Willighagen <egon.willighagen@gmail.com>
+/* Copyright (C) 2013-2016,2023  Egon Willighagen <egon.willighagen@gmail.com>
  *
  * All rights reserved.
  * 
