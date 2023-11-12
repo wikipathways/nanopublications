@@ -43,7 +43,7 @@ insert {
     wp:organismName ?organism .
   ?interaction a wp:Interaction ;
     dcterms:isPartOf ?pathway ;
-    dcterms:bibliographicCitation ?pmidURI .
+    dcterms:references ?pmidURI .
   FILTER (?sourceType != wp:DataNode)
   FILTER (?targetType != wp:DataNode)
   bind(iri(concat("http://purl.org/nanopub/temp/", md5(str(?interaction)))) as ?nanopub)
