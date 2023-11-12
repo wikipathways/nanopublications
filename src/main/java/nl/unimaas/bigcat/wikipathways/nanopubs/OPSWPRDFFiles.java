@@ -31,12 +31,12 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.openrdf.query.QueryLanguage;
-import org.openrdf.query.Update;
-import org.openrdf.repository.sail.SailRepository;
-import org.openrdf.repository.sail.SailRepositoryConnection;
-import org.openrdf.rio.RDFFormat;
-import org.openrdf.sail.memory.MemoryStore;
+import org.eclipse.rdf4j.query.QueryLanguage;
+import org.eclipse.rdf4j.query.Update;
+import org.eclipse.rdf4j.repository.sail.SailRepository;
+import org.eclipse.rdf4j.repository.sail.SailRepositoryConnection;
+import org.eclipse.rdf4j.rio.RDFFormat;
+import org.eclipse.rdf4j.sail.memory.MemoryStore;
 
 public class OPSWPRDFFiles {
 
@@ -74,7 +74,7 @@ public class OPSWPRDFFiles {
 		tbdFolder.mkdir();
 
 		MemoryStore store = new MemoryStore();
-		store.initialize();
+		store.init();
 		loadedData = new SailRepository(store);
 		SailRepositoryConnection conn = loadedData.getConnection();
 

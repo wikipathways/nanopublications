@@ -31,21 +31,21 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.rdf4j.model.IRI;
+import org.eclipse.rdf4j.model.Resource;
+import org.eclipse.rdf4j.model.Statement;
+import org.eclipse.rdf4j.model.vocabulary.RDF;
+import org.eclipse.rdf4j.repository.RepositoryException;
+import org.eclipse.rdf4j.repository.RepositoryResult;
+import org.eclipse.rdf4j.repository.sail.SailRepository;
+import org.eclipse.rdf4j.repository.sail.SailRepositoryConnection;
+import org.eclipse.rdf4j.rio.RDFFormat;
+import org.eclipse.rdf4j.rio.RDFHandlerException;
 import org.nanopub.MalformedNanopubException;
 import org.nanopub.Nanopub;
 import org.nanopub.NanopubImpl;
 import org.nanopub.NanopubUtils;
 import org.nanopub.trusty.MakeTrustyNanopub;
-import org.openrdf.model.Resource;
-import org.openrdf.model.Statement;
-import org.openrdf.model.URI;
-import org.openrdf.model.vocabulary.RDF;
-import org.openrdf.repository.RepositoryException;
-import org.openrdf.repository.RepositoryResult;
-import org.openrdf.repository.sail.SailRepository;
-import org.openrdf.repository.sail.SailRepositoryConnection;
-import org.openrdf.rio.RDFFormat;
-import org.openrdf.rio.RDFHandlerException;
 
 import net.trustyuri.TrustyUriException;
 
@@ -64,7 +64,7 @@ public class NanoPubs {
 			RepositoryResult<Statement> r = conn.getStatements(null, RDF.TYPE, Nanopub.NANOPUB_TYPE_URI, false, graph);
 			if (!r.hasNext()) continue;
 			Resource nanopubId = r.next().getSubject();
-			if (!(nanopubId instanceof URI)) {
+			if (!(nanopubId instanceof IRI)) {
 				continue;
 			}
 			pubCount++;
@@ -92,7 +92,7 @@ public class NanoPubs {
 			namespaces.put("pmid", "http://identifiers.org/pubmed/");
 			namespaces.put("obo", "http://purl.obolibrary.org/obo/");
 			namespaces.put("pav", "http://purl.org/pav/>");
-			Nanopub nanopub = new NanopubImpl(data, (URI)nanopubId, prefixes, namespaces);
+			Nanopub nanopub = new NanopubImpl(data, (IRI)nanopubId, prefixes, namespaces);
 			nanopub = MakeTrustyNanopub.transform(nanopub);
 			buffer.append(NanopubUtils.writeToString(nanopub, RDFFormat.TRIG)).append("\n\n");
 		}
